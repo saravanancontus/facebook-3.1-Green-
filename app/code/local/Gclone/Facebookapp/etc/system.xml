@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+    <sections>
+        <customer>
+            <groups>
+                <facebook translate="label" module="facebook">
+                    <fields>
+                        <apppath translate="label" module="facebook">
+                            <label>Application Path</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>35</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </apppath>
+                        <share translate="label" module="facebook">
+                            <label>Share Deal Before</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </share>
+                         <caption translate="label" module="facebook">
+                            <label>Caption</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>45</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </caption>
+                        <name translate="label" module="facebook">
+                            <label>Name</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>50</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </name>
+                         <description translate="label" module="facebook">
+                            <label>Description</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>55</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </description>
+                           <imagefield translate="label" module="facebook">
+                            <label>Upload Logo</label>
+                            <frontend_type>imagefile</frontend_type>
+                            <backend_model>adminhtml/system_config_backend_image</backend_model>
+                            <upload_dir config="system/filesystem/media" scope_info="1">uploaddir</upload_dir>
+                            <base_url type="media" scope_info="1">uploaddir</base_url>
+                            <sort_order>60</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            </imagefield>
+                    </fields>
+                </facebook>
+            </groups>
+        </customer>
+    </sections>
+</config>

@@ -1,0 +1,150 @@
+<?php
+/**
+ * Magento
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@magentocommerce.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade Magento to newer
+ * versions in the future. If you wish to customize Magento for your
+ * needs please refer to http://www.magentocommerce.com for more information.
+ *
+ * @category   design_blank
+ * @package    Mage
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
+/* contus */
+
+$appId = Mage::getStoreConfig('customer/facebook/api_id');
+
+$appSecret = Mage::getStoreConfig('customer/facebook/secret');
+
+$myUrl = Mage::getStoreConfig('customer/facebook/apppath');
+$name= Mage::getStoreConfig('customer/facebook/name');
+$caption= Mage::getStoreConfig('customer/facebook/caption');
+$description= Mage::getStoreConfig('customer/facebook/description');
+$logo= Mage::getStoreConfig('customer/facebook/imagefield');
+$url = Mage::getBaseUrl();
+$url= str_replace('index.php/','',$url);
+$logo = $url.'media/uploaddir/'.$logo;
+$code = $this->getRequest()->getParam('code');
+
+if (!empty($code)) {
+    Mage::getSingleton('core/session')->setCode('1');
+}
+$sessCode = Mage::getSingleton('core/session')->getCode();
+
+if (empty($code) && $sessCode == '') {
+
+    $dialog_url = "http://www.facebook.com/dialog/oauth?client_id=" . $appId . "&redirect_uri=" . urlencode($myUrl) . "&scope=email,publish_stream,status_update";
+
+    echo "<script> top.location.href='" . $dialog_url . "';</script>";
+}
+
+require 'facebook/facebook.php';
+
+// Create our Application instance (replace this with your appId and secret).
+$facebook = new Facebook(array(
+            'appId' => "$appId",
+            'secret' => "$appSecret",
+            'cookie' => true,
+        ));
+
+
+$loginUrl = $facebook->getLoginUrl(array(
+            'canvas' => 1,
+            'fbconnect' => 0,
+            'req_perms' => 'publish_stream,offline_access,manage_pages',
+            'next' => 'APP CANVAS URL IN FACEBOOK',
+            'cancel_url' => 'URL WHERE TO REDIRECT WHEN ACCESS NOT GRANTED',
+        ));
+//get session
+
+$session = $facebook->getSession();
+
+if ($session) {
+
+    $fbToken = $session['access_token'];
+
+    $fbUser = $session['uid'];
+
+    $path = Mage::getBaseDir('media') . DS;
+
+    $fbUsers = file($path . '/fbUsers.txt', FILE_IGNORE_NEW_LINES);
+   
+    if (in_array($fbUser, $fbUsers)) {
+       
+    } else {
+       
+        $fp = fopen($path . '/fbUsers.txt', 'a');
+        fwrite($fp, $fbUser . "\n");
+        fclose($fp);
+        $attachment = array('name' => $name,
+            'caption' => $caption,
+            'description' =>$description,
+            'link' => $myUrl,
+            'access_token' => $fbToken,
+            'picture' => "$logo",
+        );
+        $result = $facebook->api('/me/feed/', 'post', $attachment);
+    }
+
+
+}
+if ($session) {
+    $checkIfUserLikePage =  $facebook->api(array(
+    "method"    => "fql.query",
+    "query"     => "select uid from page_fan where uid=me() and page_id=125068620887147"
+));
+
+    if(sizeof($checkIfUserLikePage)=='1'){
+    Mage::getSingleton('core/session')->setApplike('1');   
+}else{
+    Mage::getSingleton('core/session')->setApplike('');
+}
+
+}
+
+
+/* * ******************************************* facebook Complte ******************************************** */
+
+//$urlCollections = $this->urlCollections();
+
+?>
+<meta http-equiv="Content-Type" content="<?php echo $this->getContentType() ?>" />
+<title><?php echo $this->getTitle() ?></title>
+<meta name="description" content="<?php echo htmlspecialchars($this->getDescription()) ?>" />
+<meta name="keywords" content="<?php echo htmlspecialchars($this->getKeywords()) ?>" />
+<meta name="robots" content="<?php echo htmlspecialchars($this->getRobots()) ?>" />
+<link rel="icon" href="<?php echo $this->getFaviconFile(); ?>" type="image/x-icon" />
+<link rel="shortcut icon" href="<?php echo $this->getFaviconFile(); ?>" type="image/x-icon" />
+
+<!--[if lt IE 7]>
+<script type="text/javascript">
+//<![CDATA[
+    var BLANK_URL = '<?php echo $this->helper('core/js')->getJsUrl('blank.html') ?>';
+    var BLANK_IMG = '<?php echo $this->helper('core/js')->getJsUrl('spacer.gif') ?>';
+//]]>
+</script>
+<![endif]-->
+<?php echo $this->getCssJsHtml() ?>
+
+
+<script type="text/javascript">
+    //<![CDATA[
+    var $j = jQuery.noConflict();
+    //]]>
+</script>
+<?php echo $this->getChildHtml() ?>
+<?php echo $this->helper('core/js')->getTranslatorScript() ?>
+<?php echo $this->getIncludes() ?>

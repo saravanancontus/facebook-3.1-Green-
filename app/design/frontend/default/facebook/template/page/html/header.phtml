@@ -1,0 +1,269 @@
+<?php
+/**
+ * Magento
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@magentocommerce.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade Magento to newer
+ * versions in the future. If you wish to customize Magento for your
+ * needs please refer to http://www.magentocommerce.com for more information.
+ *
+ * @category   design_blank
+ * @package    Mage
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
+/*
+ * Created by Contussupport
+ * www.contussupport.com
+ */
+?>
+<?php
+
+$myUrl = Mage::getStoreConfig('customer/facebook/apppath');
+
+$storeName = Mage::getStoreConfig('general/store_information/name');
+
+$currencySymbol = Mage::app()->getLocale()->currency(Mage::app()->getStore()->getCurrentCurrencyCode())->getSymbol();
+$select = "";
+$cities = array();
+$attributeId = Mage::getResourceModel('eav/entity_attribute')->getIdByCode('catalog_product', 'dealcity');
+$attribute = Mage::getModel('eav/config')->getAttribute('catalog_product', $attributeId); // get the cities attribute id 548
+
+// to get the multiple cities in pages(drop down)
+foreach ($attribute->getSource()->getAllOptions(true, true) as $option) {
+    $value = $option['value'];
+    if ($value != '') {
+        $cities[$value] = $option['label'];
+        $select .= "<option value='" . $option['label'] . "'>" . $option['label'] . "</option>";
+        $cityUrl=Mage::getModel('deal/deal')->getCityUrl($value);
+        $city[$option['label']] = $cityUrl;
+    }
+}
+$final = array_unique($cities);
+Mage::getSingleton('core/session')->setTotalCities($final);
+Mage::getSingleton('core/session')->setCitydropdown($select);
+
+if(Mage::getSingleton('core/session')->getBackground() == 'no'){
+    $style = "";
+}else{
+    $style ="background:none;";
+}
+//For SEO Url
+$page = $_SERVER['REQUEST_URI'];
+$page = explode('/', $page);
+$pageUrl = $page[2];
+
+$recent = Mage::getStoreConfig('deal/recent/as_recent');
+$active = Mage::getStoreConfig('deal/active/as_active');
+$upcoming = Mage::getStoreConfig('deal/upcoming/as_upcoming');
+
+?>
+<div id="fb-root"></div>
+<script src="http://connect.facebook.net/en_US/all.js"> </script>
+<script>
+    window.fbAsyncInit = function() {
+        FB.init({appId  : '<?php echo $appId; ?>',
+            status : true,
+            cookie : true,
+            xfbml  : true
+        });
+
+        FB.Canvas.setAutoResize(true);
+
+    };
+
+    (function() {
+        var e = document.createElement('script');
+        e.type = 'text/javascript';
+        e.src = document.location.protocol +
+            '//connect.facebook.net/en_US/all.js';
+        e.async = true;
+        document.getElementById('fb-root').appendChild(e);
+    }());
+
+    function purchaseStreamPublish(desc,pict){
+
+        var de = unescape(desc.replace(/\+/gi, " "));
+        var pics = pict;
+        var path = '<?php echo $myUrl; ?>';
+        FB.api('/me/feed', 'post', {
+            name: '<?php echo $title ?>',
+            caption: '<?php echo Mage::getSingleton('customer/session')->getCustomer()->getName() ?> Bought this deal',
+            description: (de),
+            link: path,
+            picture: pics},
+        function(response) {
+            if (!response || response.error) {
+
+            } else {
+
+            }
+        });
+    }
+    function inviteFriends()
+    {
+        FB.init({
+            appId:'<?php echo $appId; ?>', cookie:true,
+            status:true, xfbml:true
+        });
+        FB.ui({method: 'apprequests', message: 'You should Get the deals using this app.', data: 'tracking information for the user'});
+
+    }
+
+</script>
+
+
+<script type="text/javascript">
+
+    var timeout	= 500;
+    var closetimer	= 0;
+    var ddmenuitem	= 0;
+
+    // open hidden layer
+    function mopen(id)
+    {
+        // cancel close timer
+        mcancelclosetime();
+
+        // close old layer
+        if(ddmenuitem) ddmenuitem.style.visibility = 'hidden';
+
+        // get new layer and show it
+        ddmenuitem = document.getElementById(id);
+        ddmenuitem.style.visibility = 'visible';
+
+    }
+    // close showed layer
+    function mclose()
+    {
+        if(ddmenuitem) ddmenuitem.style.visibility = 'hidden';
+    }
+
+    // go close timer
+    function mclosetime()
+    {
+        closetimer = window.setTimeout(mclose, timeout);
+    }
+
+    // cancel close timer
+    function mcancelclosetime()
+    {
+        if(closetimer)
+        {
+            window.clearTimeout(closetimer);
+            closetimer = null;
+        }
+    }
+
+    // close layer when click-out
+    document.onclick = mclose;
+
+</script>
+
+<div class="clsbg">   
+    <div class="header clearfix">
+        <!--Logo starts-->
+        <div class="clslogo" >
+            <a onclick="location.href='<?php echo $myUrl;?>'"><img src="<?php echo $this->getSkinUrl('images/logo.png') ?>" width="186" height="49" alt="<?php echo $this->__($storeName); ?>" title="<?php echo $this->__($storeName); ?>" /></a>
+            <div class="city_name">
+                <span class="clsbestdeal"><?php echo $this->__('Daily Deals On the Best in'); ?></span>
+                <h4><?php echo $final[Mage::getSingleton('core/session')->getCity()]; ?></h4>
+            </div>
+        </div>
+        <!--Logo Ends-->
+        <div style="float:right;width:40%;">
+            <div id="home_contact" >
+                <ul class="clearfix">
+<?php echo $this->getChildHtml('topLinks'); ?>
+                    <li style="border:0;">
+                        <a href="<?php echo $this->getUrl("contacts"); ?>"><?php echo $this->__('Contact us'); ?></a>
+                    </li>
+                </ul>
+            </div>
+            <div id="city_slide" style="width: 300px;">
+                <div id="like_but" style="float: left;width: 80px;margin-top: 4px;margin-right:10px;"><div style="width: 125px; height: 25px; overflow: hidden; position: relative;"><iframe src="http://www.facebook.com/plugins/likebox.php?id=125068620887147&amp;width=292&amp;connections=0&amp;stream=false&amp;header=false&amp;height=255" scrolling="no" frameborder="0" style="position: absolute; top: -30px; left: -60px;border:none; overflow:hidden; width:292px; height:255px;" allowTransparency="true"></iframe></div></div>
+                <ul id="sddm" class="clearfix" style="float:right;margin-left:117px;">
+                    <li><a href="#"
+                           onmouseover="mopen('m1')"
+                           onmouseout="mclosetime()"><?php echo $this->__('Visit More Cities') ?></a>
+                        <div id="m1"
+                             onmouseover="mcancelclosetime()"
+                             onmouseout="mclosetime()">
+<?php foreach ($final as $key => $item): if ($city != ""): ?>
+                            <a href="<?php echo $city[$item]; ?>"><?php echo ucfirst($item); ?></a>
+<?php endif;
+    endforeach; ?>
+                        </div>
+                    </li>
+                </ul>
+
+            </div>
+        </div>
+        <div class="clearright"></div>
+    </div>
+</div>
+<div class="clear"></div>
+<!-- Menu Navigation -->
+<div class="header-bottom " >
+    <div style="width:750px;margin:0;">
+        <div class="menu_middlebg">
+            <ul class="clsmenuul" >
+                <li <?php if (Mage::getSingleton('cms/page')->getIdentifier() == 'home')
+                                     echo 'class="active"'; ?>><a href="<?php echo Mage::getBaseUrl(); ?>" >
+<?php echo $this->__("Today's Deal") ?></a>
+                     </li>
+                    <?php if ($recent == 1) {
+ ?>
+                             <li <?php if ($pageUrl == 'recent-deals.html')
+                                         echo 'class="active"'; ?>><a href="<?php echo Mage::getBaseUrl(); ?>recent-deals.html" ><?php echo $this->__('Recent Deals') ?></a>
+                                     </li>
+                    <?php } ?>
+<?php if ($active == 1) { ?>
+                                 <li <?php if ($pageUrl == 'active-deals.html')
+                                         echo 'class="active"'; ?>><a href="<?php echo Mage::getBaseUrl(); ?>active-deals.html" ><?php echo $this->__('Active Deals') ?></a>
+                                     </li>
+                    <?php } ?>
+<?php if ($upcoming == 1) { ?>
+                                 <li <?php if ($pageUrl == 'upcoming-deals.html')
+                                         echo 'class="active"'; ?>><a href="<?php echo Mage::getBaseUrl(); ?>upcoming-deals.html" ><?php echo $this->__('Upcoming Deals') ?></a>
+                                     </li>
+                    <?php } ?>
+                             <li <?php if (Mage::getSingleton('cms/page')->getIdentifier() == 'works')
+                                     echo 'class="active"'; ?>><a href="<?php echo Mage::getBaseUrl(); ?>works" ><?php echo $this->__('How It Works') ?></a>
+                                 </li>
+                             </ul>
+                             <ul class="floginul">
+
+<?php $loggedIn = $this->helper("customer")->isLoggedIn(); //place the output in a var  ?>
+<?php
+                                 if ($loggedIn) {
+                                     if (isset($_COOKIE['fbs_' . Mage::getSingleton('facebook/config')->getApiKey()])) {
+?>
+
+                <?php
+                                     }
+                                 } else {
+                ?>
+                                     <li><a href="<?php echo Mage::getBaseUrl() . "customer/account/login/" ?>"  title="Sign in" class="clsflogin"   ><?php echo $this->__('Sign In'); ?></a></li>
+                <?php } ?>
+
+            </ul>
+            <div class="clear"></div>
+        </div>
+        <div class="clear">
+        </div>
+    </div>
+</div>
+<!-- Menu Navigation -->
+

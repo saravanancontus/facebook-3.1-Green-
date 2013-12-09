@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<layout version="0.1.0">
+    <default>
+    </default>
+    <facebookapp_index_index>
+        <reference name="content">
+            <block type="facebookapp/facebookapp" name="facebookapp" template="facebookapp/facebookapp.phtml" />
+        </reference>
+    </facebookapp_index_index>
+</layout> 

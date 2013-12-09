@@ -1,0 +1,79 @@
+<?php
+/**
+ * Magento
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@magentocommerce.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade Magento to newer
+ * versions in the future. If you wish to customize Magento for your
+ * needs please refer to http://www.magentocommerce.com for more information.
+ *
+ * @category   design_blank
+ * @package    Mage
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
+$amounts = $this->getDiscountsales();
+ $sharelinks = Mage_Page_Block_Html_Head::getsharelinks();
+$facebook = $sharelinks['facebook'];
+$twitter = $sharelinks['twitter'];
+$linkedin = $sharelinks['linkedin'];
+$status = Mage::getStoreConfig('advertsystem/invite/enabled');
+
+?>
+<div class="footer-top">
+          <div class="footer-content">
+            <div class="top clearfix">
+              <ul class="clearfix">
+                  
+                 <?php if($this->getLayout()->createBlock('cms/block')->setBlockId('footer-merchant')->toHtml()){ ?>
+                <li class="imgblock">
+                  <?php echo $this->getLayout()->createBlock('cms/block')->setBlockId('footer-merchant')->toHtml() ?>
+                </li>
+                <?php }?>
+                 <?php if($this->getLayout()->createBlock('cms/block')->setBlockId('footer-refer')->toHtml() && $status == 1){ ?>
+                <li class="imgblock">
+                   <?php echo $this->getLayout()->createBlock('cms/block')->setBlockId('footer-refer')->toHtml() ?>
+                </li>
+                <?php }?>
+                 <?php if($this->getLayout()->createBlock('cms/block')->setBlockId('footer-paypal')->toHtml()){ ?>
+                <li class="imgblock">
+                 <?php echo $this->getLayout()->createBlock('cms/block')->setBlockId('footer-paypal')->toHtml() ?>
+                </li>
+                <?php }?>
+                <li class="imgblock">
+                  <?php echo $this->getLayout()->createBlock('cms/block')->setBlockId('footer-iphone')->toHtml() ?>
+                </li>
+                <li>
+                  <div class="follow-us clearfix">
+                    <dl>
+                      <dt><?php echo $this->__('Follow Us');?>:</dt>
+                      <?php if(!empty($facebook)){ ?>
+                      <dd><a target="_blank" href="<?php echo $facebook; ?>" class="sprite twitter"><img src="<?php echo $this->getSkinUrl('images/facebook-follow.png') ?>" alt="facebook" title="facebook"/></a></dd>
+                      <?php } if(!empty($twitter)){ ?>
+                      <dd><a target="_blank" href="<?php echo $twitter; ?>" class="sprite facebook"><img src="<?php echo $this->getSkinUrl('images/twitter-follow.png') ?>"  alt="twitter" title="twitter"/></a></dd>
+                      <?php } if(!empty($linkedin)){ ?>
+                      <dd><a target="_blank" href="<?php echo $linkedin; ?>" class="sprite rss"><img src="<?php echo $this->getSkinUrl('images/linkedin-follow.png') ?>" alt="twitter" title="twitter"/></a></dd>
+                      <?php } ?>
+                    </dl>
+                  </div>
+                  <div class="footerdollar" >
+<div class=""style="color:#05c4e7;padding-top: 5px;line-height: 18px;"><?php echo $this->__('Total Dollars saved')?><br /><span style="color: #ffffff;">$ <?php echo Mage::helper('core')->currency($amounts[0],false,false) ?></span>
+<br /><?php echo $this->__('Total Coupons bought')?><br /><span style="color: #ffffff;"><?php echo $amounts[1]; ?></span></div>
+</div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+<div class="footer-bottom"><?php echo $this->getChildHtml() ?></div>

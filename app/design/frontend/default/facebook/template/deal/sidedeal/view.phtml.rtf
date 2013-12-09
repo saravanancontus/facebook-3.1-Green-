@@ -1,0 +1,290 @@
+{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fswiss\fcharset0 Arial;}}
+{\*\generator Msftedit 5.41.15.1517;}\viewkind4\uc1\pard\f0\fs20 <!--\par
+Created by Contussupport\par
+www.contussupport.com\par
+-->\par
+<!-- Today's side deal -->\par
+<script type="text/javascript">\par
+    //var eff = jQuery.noConflict();\par
+    $j(function()\{\par
+        $j('#loopedslider').loopedSlider(\{\par
+            autoHeight: false,\par
+            containerClick: false,\par
+            autoStart:4000,\par
+            restart: 4000,\par
+            slidespeed: 500\par
+        \});\par
+        $j('#loopedslider1').loopedSlider(\{\par
+            autoHeight: false,\par
+            containerClick: false,\par
+            autoStart:4000,\par
+            restart: 4000,\par
+            slidespeed: 500\par
+        \});\par
+    \});\par
+</script>\par
+<?php\par
+/* Condition for displaying the sidedeal in the main deal page */\par
+$id = Mage::app()->getRequest()->getParam('id');\par
+$cnt = 0;\par
+$config = Mage::getModel('deal/deal')->getConfig('deal/category/sidedeal');\par
+$sidedeal = $config['value'];\par
+$isSlide = Mage::getStoreConfig('deal/sidedeal/enable_slide');\par
+$catId = $sidedeal; // put your category ID in here\par
+$title = $this->__('Todays Side Deal');\par
+if (isset($id)) \{\par
+    $config = Mage::getModel('deal/deal')->getConfig('deal/category/maindeal');\par
+    $maindeal = $config['value'];\par
+    $catId = $maindeal;\par
+\}\par
+\par
+$cities = array();\par
+$desc = '';\par
+$baseUrl = Mage::getBaseUrl();\par
+$dealsCity = Mage::getSingleton('core/session')->getCity();\par
+//getting the current city\par
+$Totalcities = Mage::getSingleton('core/session')->getTotalCities();\par
+$dealsCityName = $Totalcities[$dealsCity];\par
+if (isset($maindeal)) \{\par
+\par
+    $productIds = Mage::getModel('deal/deal')->activedeals($dealsCity,$catId);\par
+    $i =0;\par
+     foreach ($productIds as $item) \{\par
+        $productId = $item;\par
+\par
+        if ($productId != $id) \{\par
+            $count_main+=1;  // count of displaying products\par
+        \tab $model = Mage::getModel('catalog/product');\par
+    \tab     $_product = $model->load($productId);\par
+            $city = $_product->getAttributeText('dealcity');\par
+           \par
+                //if($city == $dealsCityName ) \{\par
+               \par
+                    $productId = $_product->getId();\par
+                    $images = $this->helper('catalog/image')->init($_product, 'image');\par
+                    $desc = $_product->getName();\par
+                    //break;\par
+                    $URL = $_product->getProductUrl();\par
+\par
+                    if ($desc != '') \{\par
+                        $title = $this->__('Todays Main Deal');\par
+                         if($isSlide == 0) \{\par
+                        if($i==0)\par
+                        \{\par
+                        \tab echo '<div class="block block-cart">\par
+                            <div class="block-title"><strong>'. $this->__($title).'</strong></div>';\par
+                        \}\par
+                        \par
+?>\par
+\par
+                        \par
+                            <div class="block-content">\par
+                                <div class="midpix">\par
+                                    <div class="midtxt">\par
+                                        <a href="<?php echo $URL; ?>"><img src="<?php echo $images; ?>" width="202" height="140" alt=""/></a>\par
+                                        <div class="deal_content"><a href="<?php echo $URL; ?>"><?php echo $desc; ?></a></div>\par
+                                    </div>\par
+                                </div>\par
+\par
+                            </div>\par
+                        \par
+<?php\par
+ \par
+\par
+                         \}\par
+                         else \{if($i==0)\par
+                        \{\par
+                              echo '<div class="block block-cart">\par
+            <div class="block-title"><strong>'.$this->__($title).'</strong></div>\par
+            <div class="block-content">\par
+                <div class="midpix">\par
+                    <!-- Start of Slick Slider for Active Deals -->\par
+                    <div id="loopedslider">\par
+                        <div class="container">\par
+                            <div class="slides">';\par
+                        \}\par
+                        ?>\par
+                                            <div>\par
+                                                 <div class="midtxt">\par
+                                        <a href="<?php echo $URL; ?>"><img src="<?php echo $images; ?>" width="202" height="140" alt=""/></a>\par
+                                        <div class="deal_content"><a href="<?php echo $URL; ?>"><?php echo $desc; ?></a></div>\par
+                                    </div>\par
+\par
+                                            </div>\par
+                        <?php\par
+                                        \par
+                                   \par
+                                \par
+                           \par
+                       \par
+                         \tab\par
+                         \}\par
+                         $i++;\par
+                    \}\par
+              \par
+            \par
+        \}\par
+    \}\par
+    \par
+if($i!=0 && $isSlide == 0)\par
+                        \{\par
+                        \tab echo '</div>';\par
+                        \}\par
+                        elseif($i!=0 && $isSlide !=0)\{\par
+\par
+                        \tab echo ' </div>\par
+                </div>';\par
+                               \par
+                              if($count_main > 1) \{ // To avoid showing slidearrow for one deal\par
+\par
+                echo '<div class="floatleft slidearrow">\par
+                    <a href="#" class="previous"><img src="'.$this->getSkinUrl('images/left-arrow.png') .'" width="15" height="16" alt="previous" /></a>\par
+                    <h2 style="width:165px; float:left; text-align:center;"></h2>\par
+                    <a href="#" class="next"><img src="'.$this->getSkinUrl('images/right-arrow.png').' "width="15" height="16" alt="left" class="floatright"/></a>\par
+                </div>';\par
+                              \}\par
+\par
+               echo '<div class="clear"></div>\par
+            </div>\par
+            <!-- End of Slick Slider for Active Deals -->\par
+        </div>\par
+\par
+    </div>\par
+</div>';\par
+                        \}\par
+    $catId = $sidedeal;\par
+\}\par
+\par
+$products = Mage::getModel('deal/deal')->activedeals($dealsCity,$catId);\par
+\par
+$productCount = count($products);\par
+\par
+$title = $this->__('Todays Side Deal');\par
+\par
+ \par
+//echo count($productCount);die;\par
+if ($productCount > 0) \{\par
+    if ($isSlide != 0 && $productCount != 1) \{\par
+?>\par
+                <div class="block block-cart">\par
+            <div class="block-title"><strong><?php echo $this->__($title); ?></strong></div>\par
+            <div class="block-content">\par
+                <div class="midpix">\par
+                    <!-- Start of Slick Slider for Active Deals -->\par
+                    <div id="loopedslider1">\par
+                        <div class="container">\par
+                            <div class="slides">\par
+                        <?php\par
+                        foreach ($products as $item) \{\par
+                          \par
+                          $productId = $item;\par
+\par
+                            if ($productId != $id) \{\par
+                                  $cnt+=1;  // count of displaying products\par
+                            \tab $model = Mage::getModel('catalog/product');\par
+    \tab         \tab\tab $_product = $model->load($productId);\par
+                                $city = $_product->getAttributeText('dealcity');\par
+                                \par
+                                \par
+                                    //if($city == $dealsCityName ) \{\par
+                                 \par
+                                        $productId = $_product->getId();\par
+                                        $images = $this->helper('catalog/image')->init($_product, 'image');\par
+                                        $desc = $_product->getName();\par
+                                        //break;\par
+                                        if ($flag == 1) \{\par
+                                            $title = "Extra Side Deal";\par
+                                        \}\par
+                                        $flag = 1;\par
+                                        $URL = $_product->getProductUrl();\par
+\par
+                                        if ($desc != '') \{\par
+                        ?>\par
+                                            <div>\par
+                                                <div class="midtxt">\par
+                                                    <a href="<?php echo $URL; ?>"><img src="<?php echo $images; ?>" width="203" height="140" alt=""/></a>\par
+                                                    <div class="side-deal-content"><a href="<?php echo $URL; ?>"><?php echo $desc; ?></a></div>\par
+                                                </div>\par
+\par
+                                            </div>\par
+                        <?php\par
+                                        \}\par
+                                   \par
+                                \par
+                            \}\par
+\par
+                        \}\par
+                       \par
+                       \par
+                        ?>\par
+                    </div>\par
+                </div>\par
+                        <?php // To avoid showing slidearrow for one deal\par
+                     \par
+ if($cnt > 1 ) \{?>\par
+                <div class="floatleft slidearrow">\par
+                    <a href="#" class="previous"><img src="<?php echo $this->getSkinUrl('images/left-arrow.png') ?>"width="15" height="16" alt="previous" /></a>\par
+                    <h2 style="width:165px; float:left; text-align:center;"><?php //echo $this->__('<< Slide Between Deals >>');     ?></h2>\par
+                    <a href="#" class="next"><img src="<?php echo $this->getSkinUrl('images/right-arrow.png') ?> "width="15" height="16" alt="left" class="floatright"/></a>\par
+                </div>\par
+<?php \} ?>\par
+                <div class="clear"></div>\par
+            </div>\par
+            <!-- End of Slick Slider for Active Deals -->\par
+        </div>\par
+\par
+    </div>\par
+</div>\par
+<!-- end of Today's side deal -->\par
+<?php\par
+    \} else \{\par
+$i= 0;\par
+        foreach ($products as $item) \{\par
+                          $productId = $item;\par
+\par
+            if ($productId != $id) \{\par
+            \tab $model = Mage::getModel('catalog/product');\par
+    \tab         $_product = $model->load($productId);\par
+                $city = $_product->getAttributeText('dealcity');\par
+               \par
+                    //if($city == $dealsCityName ) \{\par
+                   \par
+                        $productId = $_product->getId();\par
+                        $images = $this->helper('catalog/image')->init($_product, 'image');\par
+                        $desc = $_product->getName();\par
+                        //break;\par
+                        $URL = $_product->getProductUrl();\par
+\par
+                        if ($desc != '') \{\par
+                            $title = $this->__('Todays Side Deal');\par
+                        if($i==0)\par
+                        \{\par
+                        \tab echo '<div class="block block-cart">\par
+                            <div class="block-title"><strong>'. $this->__($title).'</strong></div>';\par
+                        \}\par
+?>\par
+                                                <div class="block-content">\par
+                                                    <div class="midpix">\par
+                                                        <div class="midtxt">\par
+                                                            <a href="<?php echo $URL; ?>"><img src="<?php echo $images; ?>" width="202" height="140" alt=""/></a>\par
+                                                            <div class="deal_content"><a href="<?php echo $URL; ?>"><?php echo $desc; ?></a></div>\par
+                                                        </div>\par
+                                                    </div>\par
+\par
+                                                </div>\par
+                                            \par
+<?php\par
+ $i++;\par
+                        \}\par
+                   \par
+               \par
+            \}\par
+        \}\par
+         if($i!=0)\par
+                        \{\par
+                        \tab echo '</div>';\par
+                        \}\par
+    \}\par
+\} ?>\par
+}
+ 

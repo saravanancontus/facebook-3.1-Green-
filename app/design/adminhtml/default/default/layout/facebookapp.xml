@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<layout version="0.1.0">
+    <facebookapp_adminhtml_facebookapp_index>
+        <reference name="content">
+            <block type="facebookapp/adminhtml_facebookapp" name="facebookapp" />
+        </reference>
+    </facebookapp_adminhtml_facebookapp_index>
+</layout>
